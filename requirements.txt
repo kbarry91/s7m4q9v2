@@ -1,0 +1,11 @@
+# Direct dependencies only (pinned for reproducibility).
+# Transitive deps (starlette, pydantic, etc.) are resolved automatically by pip.
+# Recreate the environment on any machine with:
+#   python3 -m venv .venv
+#   source .venv/bin/activate        # Windows: .venv\Scripts\activate
+#   pip install -r requirements.txt
+#
+# Python 3.11+ required (developed on 3.14).
+
+fastapi==0.142.2
+uvicorn[standard]==0.54.0
