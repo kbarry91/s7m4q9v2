@@ -26,8 +26,7 @@ async def get_session() -> AsyncGenerator[AsyncSession, None]:
 
 
 async def init_db() -> None:
-    # Create tables from ORM metadata. Adequate for a PoC; production uses migrations.
-    from app import models  # noqa: F401  register models on Base.metadata
+    from app import models  
 
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)

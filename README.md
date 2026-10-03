@@ -51,10 +51,25 @@ requirements.txt     # pinned direct dependencies
 
 ## Endpoints
 
-| Method | Path      | Description                                  |
-|--------|-----------|----------------------------------------------|
-| GET    | `/health` | Liveness check — returns `{"status": "ok"}`  |
+### ✅ Implemented
+
+| Method | Path      | Description |
+|--------|-----------|-------------|
+| GET    | `/health` | Liveness check — returns `{"status": "ok"}` |
+| POST   | `/readings` | Ingest a sensor reading. Request body: `{"sensor_id": "string", "metric": "temperature|humidity|pressure|wind_speed|wind_direction", "value": float, "timestamp": "optional ISO8601"}`. Returns `201 Created` with auto-assigned `id` and server-assigned timestamp (if omitted). |
+
+### 🔄 In Progress
+
+| Method | Path      | Description |
+|--------|-----------|-------------|
+| GET    | `/readings` | Query aggregated readings (sensor filtering, metric filtering, date range, min/max/avg/sum aggregation). Day 3 task. |
 
 ## Development status
 
-Proof of concept, built incrementally.
+Proof of concept, built incrementally over 5 days.
+
+- **Day 1**: Planning, framework selection, GET /health ✅
+- **Day 2**: Data layer, POST /readings ingest ✅
+- **Day 3**: Debugging session, GET /readings query endpoint 🔄
+- **Day 4**: Resilience, caching, rate limiting
+- **Day 5**: Documentation polish, Postgres migration, monitoring
