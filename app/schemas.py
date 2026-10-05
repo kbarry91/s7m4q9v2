@@ -11,6 +11,12 @@ class Metric(str, Enum):
     humidity = "humidity"
     wind_speed = "wind_speed"
 
+class Statistic (str, Enum):
+    min = "min"
+    max = "max"
+    avg = "avg"
+    sum = "sum"
+    latest = "latest"
 
 class ReadingCreate(BaseModel):
     """Incoming payload for a single sensor reading."""
@@ -40,3 +46,11 @@ class ReadingOut(BaseModel):
     value: float = Field(description="Measured value in the metric's canonical unit")
     timestamp: datetime = Field(description="When the measurement was taken (UTC)")
 
+
+class AggregatedReadingResponse(BaseModel):
+    """Response schema for aggregated sensor readings."""
+
+    sensor_id: str = Field(description="Unique identifier of the sensor")
+    metric: Metric = Field(description="Which metric this reading is for")
+    statistic: Statistic = Field(description="Which statistic to compute")
+    value: float = Field(description="Computed value of the requested statistic")
