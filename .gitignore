@@ -1,0 +1,24 @@
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+
+# Env / secrets
+.env
+
+# Database (SQLite file — don't commit data)
+*.db
+*.sqlite3
+
+
+learning/
+docs/
+job-spec.text
+project-requirement.txt
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
