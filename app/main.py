@@ -5,7 +5,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 
 from app.db import init_db
-from app.routers import health, readings, test_dependency_router
+from app.routers import health, readings, resilience_demo_router
 
 
 @asynccontextmanager
@@ -23,4 +23,4 @@ app = FastAPI(
 
 app.include_router(health.router)
 app.include_router(readings.router)
-app.include_router(test_dependency_router.router)
+app.include_router(resilience_demo_router.router)

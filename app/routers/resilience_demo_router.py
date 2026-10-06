@@ -2,29 +2,22 @@ import asyncio
 
 from fastapi import APIRouter, HTTPException, Query
 
-from app.config import test_dependency_enabled, test_dependency_timeout_seconds
-from app.services.test_dependency_service import TestDependencyService
+from app.config import get_test_dependency_timeout_seconds, is_test_dependency_enabled
+from app.services.fake_slow_dependency_service import FakeSlowDependencyService
 
 
 router = APIRouter(prefix="/test", tags=["testing"])
 test_dependency_bulkhead = asyncio.Semaphore(2)
 test_dependency_admission = asyncio.Lock()
 
-"""
-Request arrives
-  -> acquire admission lock
-  -> check whether bulkhead is full
-  -> acquire one bulkhead slot
-  -> release admission lock
-  -> run slow dependency
-  -> release bulkhead slot in finally
-  """
+# Admission is serialized only long enough to check capacity and claim a slot.
+# The semaphore then limits slow dependency calls to two concurrent operations.
 @router.get("/slow-dependency")
 async def slow_dependency(
     delay: float = Query(default=0.0, ge=0.0, le=10.0),
 ) -> dict:
 
-    if not test_dependency_enabled():
+    if not is_test_dependency_enabled():
         raise HTTPException(status_code=404, detail="Test dependency disabled")
 
     async with test_dependency_admission:
@@ -36,12 +29,12 @@ async def slow_dependency(
 
         await test_dependency_bulkhead.acquire()
 
-    test_service = TestDependencyService()
+    test_service = FakeSlowDependencyService()
 
     try:
         return await asyncio.wait_for(
             test_service.call(delay),
-            timeout=test_dependency_timeout_seconds(),
+            timeout=get_test_dependency_timeout_seconds(),
         )
     except asyncio.TimeoutError:
         raise HTTPException(
