@@ -19,6 +19,6 @@ class Reading(Base):
     timestamp: Mapped[datetime] = mapped_column(DateTime, index=True)
 
     __table_args__ = (
-        # Table level args, the comma defines as a tuple required by sql alchemyeven for a single index
+        # Table-level arguments must be a tuple, even for one index.
         Index("ix_readings_sensor_metric_timestamp","sensor_id", "metric", "timestamp"),
     )

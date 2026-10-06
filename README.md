@@ -58,6 +58,7 @@ requirements.txt     # pinned direct dependencies
 | GET | `/health` | Liveness check. Returns `{"status": "ok"}`. |
 | POST | `/readings` | Store one reading. Metrics: `temperature`, `humidity`, or `wind_speed`. |
 | GET | `/readings` | Return latest readings or aggregate the previous `days=1..30` days. Supports sensor, metric, and statistic filters. |
+| GET | `/test/slow-dependency` | Test-only endpoint for timeout and bulkhead exercises. Enabled with `TEST_DEPENDENCY_ENABLED=true`. |
 
 When `days` is omitted, the API returns the latest reading for each selected
 sensor/metric pair and reports `"statistic": "latest"`. When `days` is supplied,
@@ -185,6 +186,56 @@ Example response:
 ]
 ```
 
+### Rate limiting
+
+`POST /readings` is protected by a proof-of-concept token bucket:
+
+| Setting | Policy |
+|---------|--------|
+| Identity | Client IP address |
+| Capacity | 5 requests in an initial burst |
+| Refill rate | 1 token per second |
+| Exceeded limit | HTTP `429 Too Many Requests` |
+
+`GET /health` and `GET /readings` are not rate-limited in this PoC. Clients are
+responsible for retrying rejected POST requests, preferably with exponential
+backoff. A production implementation should use authenticated API keys and shared
+state such as Redis when multiple application workers are deployed.
+
+### HTTP status codes
+
+| Status | Source | Meaning |
+|--------|--------|---------|
+| `200 OK` | FastAPI/endpoint | Request completed successfully. Used by health checks, queries, and the enabled test endpoint. |
+| `201 Created` | Application | A reading was accepted and persisted by `POST /readings`. |
+| `404 Not Found` | Application or FastAPI | The test endpoint is disabled, or the requested route does not exist. |
+| `405 Method Not Allowed` | FastAPI | The route exists, but the HTTP method is not supported. |
+| `422 Unprocessable Entity` | FastAPI/Pydantic | Request validation failed, such as an invalid metric, statistic, `days` value, delay, or request body. |
+| `429 Too Many Requests` | Application | The client IP exhausted the `POST /readings` token bucket. |
+| `503 Service Unavailable` | Application | The test dependency bulkhead has no available slot. |
+| `504 Gateway Timeout` | Application | The test dependency exceeded the configured timeout. |
+| `500 Internal Server Error` | FastAPI/server | An unexpected unhandled server error occurred. This is not an expected success path. |
+
+The `404`, `405`, and `422` responses are largely provided by FastAPI's routing and
+validation machinery. The `429`, `503`, and `504` responses are explicit resilience
+decisions in this PoC.
+
+### Test dependency configuration
+
+The slow-dependency endpoint is for learning and resilience testing only. Enable it
+when starting the application:
+
+```bash
+TEST_DEPENDENCY_ENABLED=true \
+TEST_DEPENDENCY_TIMEOUT_SECONDS=2 \
+.venv/bin/uvicorn app.main:app --host 127.0.0.1 --port 8000
+```
+
+The endpoint accepts `delay=0..10` seconds. It uses a two-slot bulkhead, returns
+`503` when both slots are occupied, and returns `504` when the delay exceeds the
+configured two-second timeout. It is not part of the original weather API
+requirements.
+
 ## Development status
 
 Proof of concept, built incrementally over 5 days.
@@ -192,5 +243,5 @@ Proof of concept, built incrementally over 5 days.
 - **Day 1**: Planning, framework selection, GET /health ✅
 - **Day 2**: Data layer, POST /readings ingest ✅
 - **Day 3**: Debugging session, GET /readings query endpoint, latest mode, lookback aggregation, and verification complete
-- **Day 4**: Resilience, caching, rate limiting
+- **Day 4**: Baseline load testing, IP-based token-bucket rate limiting, timeout, and bulkhead exercises complete; automated tests remain
 - **Day 5**: Documentation polish, Postgres migration, monitoring
