@@ -262,7 +262,7 @@ state such as Redis when multiple application workers are deployed.
 | `404 Not Found` | Application or FastAPI | The test endpoint is disabled, or the requested route does not exist. |
 | `405 Method Not Allowed` | FastAPI | The route exists, but the HTTP method is not supported. |
 | `422 Unprocessable Entity` | FastAPI/Pydantic | Request validation failed, such as an invalid metric, statistic, `days` value, delay, or request body. |
-| `429 Too Many Requests` | Application | The client IP exhausted the `POST /readings` token bucket. |
+| `429 Too Many Requests` | Application | The client IP exhausted the `POST /readings` token bucket. The response includes `Retry-After: 1`. |
 | `503 Service Unavailable` | Application | The test dependency bulkhead has no available slot. |
 | `504 Gateway Timeout` | Application | The test dependency exceeded the configured timeout. |
 | `500 Internal Server Error` | FastAPI/server | An unexpected unhandled server error occurred. This is not an expected success path. |
