@@ -5,9 +5,9 @@ from datetime import datetime, timezone
 from fastapi import APIRouter, Depends, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.db import get_session
-from app.models import Reading
-from app.repository import ReadingRepository
+from app.persistence.db import get_session
+from app.persistence.models import Reading
+from app.persistence.repository import ReadingRepository
 from app.schemas import AggregatedReadingResponse, Metric, ReadingCreate, ReadingOut, Statistic
 from app.services.query_service import QueryReadingService
 from app.rate_limiter import enforce_rate_limit

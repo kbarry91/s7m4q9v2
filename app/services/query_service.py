@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta, timezone
 
-from app.repository import ReadingRepository
+from app.persistence.repository import ReadingRepository
 from app.schemas import Statistic
 
 

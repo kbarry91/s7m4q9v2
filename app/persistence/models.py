@@ -1,11 +1,11 @@
-"""ORM models."""
+"""ORM models for persisted sensor readings."""
 
 from datetime import datetime
 
-from sqlalchemy import DateTime, Float, Integer, String, Index
+from sqlalchemy import DateTime, Float, Index, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column
 
-from app.db import Base
+from app.persistence.db import Base
 
 
 class Reading(Base):
@@ -13,12 +13,15 @@ class Reading(Base):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     metric: Mapped[str] = mapped_column(String, index=True)
-    # index not required as it's included in the composite index below
     sensor_id: Mapped[str] = mapped_column(String)
     value: Mapped[float] = mapped_column(Float)
     timestamp: Mapped[datetime] = mapped_column(DateTime, index=True)
 
     __table_args__ = (
-        # Table-level arguments must be a tuple, even for one index.
-        Index("ix_readings_sensor_metric_timestamp","sensor_id", "metric", "timestamp"),
+        Index(
+            "ix_readings_sensor_metric_timestamp",
+            "sensor_id",
+            "metric",
+            "timestamp",
+        ),
     )

@@ -26,7 +26,7 @@ async def get_session() -> AsyncGenerator[AsyncSession, None]:
 
 
 async def init_db() -> None:
-    from app import models  
+    from app.persistence import models
 
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)

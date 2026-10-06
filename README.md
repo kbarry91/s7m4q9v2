@@ -40,6 +40,21 @@ Run the automated tests with:
 .venv/bin/python -m pytest tests -q
 ```
 
+Run only the unit tests:
+
+```bash
+.venv/bin/python -m pytest tests/unit -q
+```
+
+Run only the integration tests:
+
+```bash
+.venv/bin/python -m pytest tests/integration -q
+```
+
+Unit tests cover isolated application logic. Integration tests exercise FastAPI,
+request validation, database persistence, and endpoint behavior together.
+
 ## Running the API
 
 ```bash
@@ -56,9 +71,33 @@ The `--reload` flag restarts the server automatically when you edit code (dev on
 
 ```
 app/
-  main.py            # app entry point; mounts routers
-  routers/           # HTTP layer — one module per feature
-requirements.txt     # pinned direct dependencies
+  main.py            # app entry point and router registration
+  routers/           # HTTP layer and endpoint definitions
+    health.py
+    readings.py
+    resilience_demo_router.py
+  services/          # business logic and fake test dependency
+    query_service.py
+    fake_slow_dependency_service.py
+  config.py          # environment-based configuration
+  persistence/       # database engine, ORM models, and repositories
+    db.py
+    models.py
+    repository.py
+  schemas.py         # Pydantic request and response models
+tests/
+  unit/              # isolated logic tests
+    test_config.py
+    test_query_service.py
+    test_rate_limiter.py
+  integration/       # FastAPI, validation, and SQLite tests
+    test_health_endpoint.py
+    test_readings_ingestion.py
+    test_readings_queries.py
+    test_resilience_endpoints.py
+requirements.txt     # runtime dependencies
+requirements-dev.txt # development and test dependencies
+pytest.ini           # pytest discovery configuration
 ```
 
 ## Endpoints
@@ -255,5 +294,5 @@ Proof of concept, built incrementally over 5 days.
 - **Day 1**: Planning, framework selection, GET /health ✅
 - **Day 2**: Data layer, POST /readings ingest ✅
 - **Day 3**: Debugging session, GET /readings query endpoint, latest mode, lookback aggregation, and verification complete
-- **Day 4**: Baseline load testing, IP-based token-bucket rate limiting, timeout, bulkhead exercises, and unit tests complete; integration tests remain
+- **Day 4**: Baseline load testing, IP-based token-bucket rate limiting, timeout, bulkhead exercises, and automated tests complete: 17 tests passing
 - **Day 5**: Documentation polish, Postgres migration, monitoring

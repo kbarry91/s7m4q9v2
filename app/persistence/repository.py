@@ -1,13 +1,13 @@
 """Data-access layer: the only place that talks to the database."""
 
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import func, select
 from datetime import datetime
+
+from sqlalchemy import func, select
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.persistence.models import Reading
 from app.schemas import Statistic
 
-from app.models import Reading
-
-# Mapping of Statistic enum values to their corresponding SQLAlchemy functions
 STATISTIC_FUNCTIONS = {
     Statistic.min: func.min,
     Statistic.max: func.max,
@@ -26,26 +26,25 @@ class ReadingRepository:
         self.session.add(reading)
         await self.session.commit()
         await self.session.refresh(reading)
-        
         return reading
 
-    async def get_aggregate(self,
-                        sensor_ids: list[str] | None,
-                        metrics: list[str] | None,
-                        statistic: Statistic,
-                        start_timestamp: datetime,
-                        end_timestamp: datetime) -> list:
-
-        # Get the aggregation function based on the requested statistic
+    async def get_aggregate(
+        self,
+        sensor_ids: list[str] | None,
+        metrics: list[str] | None,
+        statistic: Statistic,
+        start_timestamp: datetime,
+        end_timestamp: datetime,
+    ) -> list:
         agg = STATISTIC_FUNCTIONS[statistic](Reading.value)
 
         stmt = select(
             Reading.sensor_id,
             Reading.metric,
-            agg.label("value")
+            agg.label("value"),
         ).where(
             Reading.timestamp >= start_timestamp,
-            Reading.timestamp <= end_timestamp
+            Reading.timestamp <= end_timestamp,
         )
 
         if sensor_ids:
@@ -54,14 +53,9 @@ class ReadingRepository:
         if metrics:
             stmt = stmt.where(Reading.metric.in_(metrics))
 
-        stmt = stmt.group_by(
-            Reading.sensor_id,
-            Reading.metric
-        )
+        stmt = stmt.group_by(Reading.sensor_id, Reading.metric)
         result = await self.session.execute(stmt)
-
-        rows = result.all()
-        return rows 
+        return result.all()
 
     async def get_latest(
         self,
