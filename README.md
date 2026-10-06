@@ -28,6 +28,18 @@ pip install -r requirements.txt
 To reproduce this environment on another machine, repeat the three steps above — the
 pinned `requirements.txt` guarantees the same package versions.
 
+For development and testing, install the additional tools with:
+
+```bash
+pip install -r requirements-dev.txt
+```
+
+Run the automated tests with:
+
+```bash
+.venv/bin/python -m pytest tests -q
+```
+
 ## Running the API
 
 ```bash
@@ -243,5 +255,5 @@ Proof of concept, built incrementally over 5 days.
 - **Day 1**: Planning, framework selection, GET /health ✅
 - **Day 2**: Data layer, POST /readings ingest ✅
 - **Day 3**: Debugging session, GET /readings query endpoint, latest mode, lookback aggregation, and verification complete
-- **Day 4**: Baseline load testing, IP-based token-bucket rate limiting, timeout, and bulkhead exercises complete; automated tests remain
+- **Day 4**: Baseline load testing, IP-based token-bucket rate limiting, timeout, bulkhead exercises, and unit tests complete; integration tests remain
 - **Day 5**: Documentation polish, Postgres migration, monitoring
