@@ -50,8 +50,7 @@ async def enforce_rate_limit(request: Request) -> None:
     client_key = request.client.host if request.client else "unknown-ip"
 
     if not limiter.allow_request(client_key):
-            # PoC policy: one token refills per second, so clients can retry after
-            # one second.
+        # PoC policy: one token refills per second, so clients can attempt retry after one second.
         raise HTTPException(
             status_code=429,
             detail="Rate limit exceeded",
