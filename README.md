@@ -9,6 +9,9 @@ Built with **FastAPI** (async) and **SQLite** (swappable to PostgreSQL).
 
 - Python 3.11 or newer (developed on 3.14)
 
+Development and testing were performed on macOS 26.7.1 with Python 3.14.5.
+Windows commands below are provided as alternatives and are marked `[untested]`.
+
 ## Setup
 
 Clone the repo, then from the project root:
@@ -25,6 +28,14 @@ source .venv/bin/activate          # macOS / Linux
 pip install -r requirements.txt
 ```
 
+Windows PowerShell alternative `[untested]`:
+
+```powershell
+py -m venv .venv
+.venv\Scripts\Activate.ps1
+python -m pip install -r requirements.txt
+```
+
 To reproduce this environment on another machine, repeat the three steps above — the
 pinned `requirements.txt` guarantees the same package versions.
 
@@ -34,10 +45,22 @@ For development and testing, install the additional tools with:
 pip install -r requirements-dev.txt
 ```
 
+Windows PowerShell alternative `[untested]`:
+
+```powershell
+python -m pip install -r requirements-dev.txt
+```
+
 Run the automated tests with:
 
 ```bash
 .venv/bin/python -m pytest tests -q
+```
+
+Windows PowerShell alternative `[untested]`:
+
+```powershell
+python -m pytest tests -q
 ```
 
 Run only the unit tests:
@@ -46,20 +69,39 @@ Run only the unit tests:
 .venv/bin/python -m pytest tests/unit -q
 ```
 
+Windows PowerShell alternative `[untested]`:
+
+```powershell
+python -m pytest tests/unit -q
+```
+
 Run only the integration tests:
 
 ```bash
 .venv/bin/python -m pytest tests/integration -q
 ```
 
+Windows PowerShell alternative `[untested]`:
+
+```powershell
+python -m pytest tests/integration -q
+```
+
+The unit and integration commands can also be run with `python -m pytest ...` after
+activating the virtual environment on Windows.
+
 Unit tests cover isolated application logic. Integration tests exercise FastAPI,
 request validation, database persistence, and endpoint behavior together.
 
 ## Running the API
 
-```bash
-uvicorn app.main:app --reload
-```
+| | macOS / Linux | Windows PowerShell |
+|---|---|---|
+| Start API | `uvicorn app.main:app --reload` | `[untested] python -m uvicorn app.main:app --reload` |
+| Run all tests | `.venv/bin/python -m pytest tests -q` | `[untested] python -m pytest tests -q` |
+
+Run these commands after activating the virtual environment. The SQLite database is
+created as `weather.db` in the project root on first startup.
 
 - API base URL: http://127.0.0.1:8000
 - Interactive docs (Swagger UI): http://127.0.0.1:8000/docs
@@ -117,6 +159,10 @@ the API aggregates all matching readings from that lookback period. The supporte
 statistics are `min`, `max`, `avg`, and `sum`; the default is `avg`.
 
 ### Sample requests and responses
+
+The `curl` examples below are the macOS/Linux commands used for testing. Windows
+PowerShell alternative `[untested]`: use `curl.exe` with the same arguments, or use
+the Swagger UI at `http://127.0.0.1:8000/docs`.
 
 Health check:
 
@@ -282,10 +328,27 @@ TEST_DEPENDENCY_TIMEOUT_SECONDS=2 \
 .venv/bin/uvicorn app.main:app --host 127.0.0.1 --port 8000
 ```
 
+In Windows PowerShell, set the variables before starting the server:
+
+```powershell
+# Windows PowerShell alternative [untested]
+$env:TEST_DEPENDENCY_ENABLED = "true"
+$env:TEST_DEPENDENCY_TIMEOUT_SECONDS = "2"
+python -m uvicorn app.main:app --host 127.0.0.1 --port 8000
+```
+
 The endpoint accepts `delay=0..10` seconds. It uses a two-slot bulkhead, returns
 `503` when both slots are occupied, and returns `504` when the delay exceeds the
 configured two-second timeout. It is not part of the original weather API
 requirements.
+
+### PoC limitations
+
+This is intentionally a focused proof of concept. SQLite is used for local
+persistence, integration tests use the local database with isolated test identifiers,
+and rate-limit state is in memory for one process. The resilience endpoint is a
+test-only demonstration, not a production external-service integration. A full list
+of production follow-up work and enhancements is documented privately.
 
 ## Development status
 
@@ -295,4 +358,5 @@ Proof of concept, built incrementally over 5 days.
 - **Day 2**: Data layer, POST /readings ingest ✅
 - **Day 3**: Debugging session, GET /readings query endpoint, latest mode, lookback aggregation, and verification complete
 - **Day 4**: Baseline load testing, IP-based token-bucket rate limiting, timeout, bulkhead exercises, and automated tests complete: 17 tests passing
-- **Day 5**: Documentation polish, Postgres migration, monitoring
+- **Initial PoC**: Complete for the original challenge requirements ✅
+- **Day 5 / optional**: Conversational AI assistant, PostgreSQL migration, and production observability remain future work

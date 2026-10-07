@@ -13,7 +13,7 @@ class Reading(Base):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     metric: Mapped[str] = mapped_column(String, index=True)
-    sensor_id: Mapped[str] = mapped_column(String)
+    sensor_id: Mapped[str] = mapped_column(String(64))
     value: Mapped[float] = mapped_column(Float)
     timestamp: Mapped[datetime] = mapped_column(DateTime, index=True)
 
