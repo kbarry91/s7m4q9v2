@@ -8,7 +8,13 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.persistence.db import get_session
 from app.persistence.models import Reading
 from app.persistence.repository import ReadingRepository
-from app.schemas import AggregatedReadingResponse, Metric, ReadingCreate, ReadingOut, Statistic
+from app.schemas import (
+    Metric,
+    ReadingAggregateResponse,
+    ReadingCreateRequest,
+    ReadingCreateResponse,
+    Statistic,
+)
 from app.services.query_service import QueryReadingService
 from app.rate_limiter import enforce_rate_limit
 
@@ -18,11 +24,11 @@ router = APIRouter(tags=["readings"])
 @router.post(
     "/readings",
     status_code=status.HTTP_201_CREATED,
-    response_model=ReadingOut,
+    response_model=ReadingCreateResponse,
     dependencies=[Depends(enforce_rate_limit)],
 )
 async def create_reading(
-    payload: ReadingCreate,
+    payload: ReadingCreateRequest,
     session: AsyncSession = Depends(get_session),
 ) -> Reading:
    
@@ -41,7 +47,7 @@ async def create_reading(
 
 @router.get(
     "/readings",
-    response_model=list[AggregatedReadingResponse],
+    response_model=list[ReadingAggregateResponse],
 )
 async def query_readings(
     sensor_ids: list[str] | None = Query(default=None),

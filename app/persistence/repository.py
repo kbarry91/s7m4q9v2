@@ -23,10 +23,14 @@ class ReadingRepository:
         self.session = session
 
     async def add(self, reading: Reading) -> Reading:
-        self.session.add(reading)
-        await self.session.commit()
-        await self.session.refresh(reading)
-        return reading
+        try:
+            self.session.add(reading)
+            await self.session.commit()
+            await self.session.refresh(reading)
+            return reading
+        except Exception:
+            await self.session.rollback()
+            raise
 
     async def get_aggregate(
         self,
@@ -79,7 +83,7 @@ class ReadingRepository:
 
         if metrics:
             ranked_readings = ranked_readings.where(Reading.metric.in_(metrics))
-
+        # create a subquery to further filter only the latest readings
         latest_readings = ranked_readings.subquery()
         stmt = select(
             latest_readings.c.sensor_id,
