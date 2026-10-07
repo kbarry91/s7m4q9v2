@@ -26,6 +26,7 @@ async def get_session() -> AsyncGenerator[AsyncSession, None]:
 
 
 async def init_db() -> None:
+    # Import all models here to ensure they are registered with the metadata before creating tables.
     from app.persistence import models
 
     async with engine.begin() as conn:

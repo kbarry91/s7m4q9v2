@@ -18,7 +18,7 @@ class Statistic (str, Enum):
     sum = "sum"
     latest = "latest"
 
-class ReadingCreate(BaseModel):
+class ReadingCreateRequest(BaseModel):
     """Incoming payload for a single sensor reading."""
 
     sensor_id: str = Field(
@@ -35,7 +35,7 @@ class ReadingCreate(BaseModel):
     )
 
 
-class ReadingOut(BaseModel):
+class ReadingCreateResponse(BaseModel):
     """A stored reading returned to clients."""
 
     model_config = ConfigDict(from_attributes=True)
@@ -47,7 +47,7 @@ class ReadingOut(BaseModel):
     timestamp: datetime = Field(description="When the measurement was taken (UTC)")
 
 
-class AggregatedReadingResponse(BaseModel):
+class ReadingAggregateResponse(BaseModel):
     """Response schema for aggregated sensor readings."""
 
     sensor_id: str = Field(description="Unique identifier of the sensor")
