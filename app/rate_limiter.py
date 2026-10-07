@@ -33,6 +33,7 @@ class TokenBucketRateLimiter:
         new_tokens = min(self.capacity, bucket["tokens"] + earned_tokens)
         bucket["tokens"] = new_tokens
         bucket["last_refill_time"] = current_time
+
     def allow_request(self, client_key: str) -> bool:
         bucket = self._get_bucket(client_key)
         self._refill_bucket(bucket)
@@ -49,4 +50,9 @@ async def enforce_rate_limit(request: Request) -> None:
     client_key = request.client.host if request.client else "unknown-ip"
 
     if not limiter.allow_request(client_key):
-        raise HTTPException(status_code=429, detail="Rate limit exceeded")
+        # PoC policy: one token refills per second, so clients can attempt retry after one second.
+        raise HTTPException(
+            status_code=429,
+            detail="Rate limit exceeded",
+            headers={"Retry-After": "1"},
+        )

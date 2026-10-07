@@ -31,6 +31,7 @@ def test_post_readings_returns_429_after_bucket_is_exhausted():
         201,
         429,
     ]
+    assert responses[-1].headers["retry-after"] == "1"
 
 
 def test_slow_dependency_is_disabled_by_default(monkeypatch):
