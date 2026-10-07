@@ -10,7 +10,6 @@ Built with **FastAPI** (async) and **SQLite** (swappable to PostgreSQL).
 - Python 3.11 or newer (developed on 3.14)
 
 Development and testing were performed on macOS 26.7.1 with Python 3.14.5.
-Windows commands below are provided as alternatives and are marked `[untested]`.
 
 ## Setup
 
@@ -21,23 +20,14 @@ Clone the repo, then from the project root:
 python3 -m venv .venv
 
 # 2. Activate it
-source .venv/bin/activate          # macOS / Linux
-# .venv\Scripts\activate           # Windows (PowerShell)
+source .venv/bin/activate
 
 # 3. Install dependencies (pinned in requirements.txt for reproducibility)
 pip install -r requirements.txt
 ```
 
-Windows PowerShell alternative `[untested]`:
-
-```powershell
-py -m venv .venv
-.venv\Scripts\Activate.ps1
-python -m pip install -r requirements.txt
-```
-
-To reproduce this environment on another machine, repeat the three steps above — the
-pinned `requirements.txt` guarantees the same package versions.
+To reproduce this environment on macOS, repeat the three steps above. The pinned
+`requirements.txt` guarantees the same package versions.
 
 For development and testing, install the additional tools with:
 
@@ -45,60 +35,12 @@ For development and testing, install the additional tools with:
 pip install -r requirements-dev.txt
 ```
 
-Windows PowerShell alternative `[untested]`:
-
-```powershell
-python -m pip install -r requirements-dev.txt
-```
-
-Run the automated tests with:
-
-```bash
-.venv/bin/python -m pytest tests -q
-```
-
-Windows PowerShell alternative `[untested]`:
-
-```powershell
-python -m pytest tests -q
-```
-
-Run only the unit tests:
-
-```bash
-.venv/bin/python -m pytest tests/unit -q
-```
-
-Windows PowerShell alternative `[untested]`:
-
-```powershell
-python -m pytest tests/unit -q
-```
-
-Run only the integration tests:
-
-```bash
-.venv/bin/python -m pytest tests/integration -q
-```
-
-Windows PowerShell alternative `[untested]`:
-
-```powershell
-python -m pytest tests/integration -q
-```
-
-The unit and integration commands can also be run with `python -m pytest ...` after
-activating the virtual environment on Windows.
-
-Unit tests cover isolated application logic. Integration tests exercise FastAPI,
-request validation, database persistence, and endpoint behavior together.
-
 ## Running the API
 
-| | macOS / Linux | Windows PowerShell |
-|---|---|---|
-| Start API | `uvicorn app.main:app --reload` | `[untested] python -m uvicorn app.main:app --reload` |
-| Run all tests | `.venv/bin/python -m pytest tests -q` | `[untested] python -m pytest tests -q` |
+| Command | macOS |
+|---|---|
+| Start API | `uvicorn app.main:app --reload` |
+| Run all tests | `.venv/bin/python -m pytest tests -q` |
 
 Run these commands after activating the virtual environment. The SQLite database is
 created as `weather.db` in the project root on first startup.
@@ -108,6 +50,34 @@ created as `weather.db` in the project root on first startup.
 - Alternative docs (ReDoc): http://127.0.0.1:8000/redoc
 
 The `--reload` flag restarts the server automatically when you edit code (dev only).
+
+## API documentation
+
+Swagger UI provides interactive documentation at `/docs`:
+
+![Swagger UI for the Weather Sensor API](assets/swagger-ui.png)
+
+The generated OpenAPI contract is available at `/openapi.json`:
+
+![Generated OpenAPI JSON for the Weather Sensor API](assets/openapi-json.png)
+
+## Testing
+
+Run the full test suite:
+
+```bash
+.venv/bin/python -m pytest tests -q
+```
+
+Run only unit or integration tests:
+
+```bash
+.venv/bin/python -m pytest tests/unit -q
+.venv/bin/python -m pytest tests/integration -q
+```
+
+Unit tests cover isolated application logic. Integration tests exercise FastAPI,
+request validation, database persistence, and endpoint behavior together.
 
 ## Project structure
 
@@ -160,9 +130,7 @@ statistics are `min`, `max`, `avg`, and `sum`; the default is `avg`.
 
 ### Sample requests and responses
 
-The `curl` examples below are the macOS/Linux commands used for testing. Windows
-PowerShell alternative `[untested]`: use `curl.exe` with the same arguments, or use
-the Swagger UI at `http://127.0.0.1:8000/docs`.
+The `curl` examples below are the macOS commands used for testing.
 
 Health check:
 
@@ -326,15 +294,6 @@ when starting the application:
 TEST_DEPENDENCY_ENABLED=true \
 TEST_DEPENDENCY_TIMEOUT_SECONDS=2 \
 .venv/bin/uvicorn app.main:app --host 127.0.0.1 --port 8000
-```
-
-In Windows PowerShell, set the variables before starting the server:
-
-```powershell
-# Windows PowerShell alternative [untested]
-$env:TEST_DEPENDENCY_ENABLED = "true"
-$env:TEST_DEPENDENCY_TIMEOUT_SECONDS = "2"
-python -m uvicorn app.main:app --host 127.0.0.1 --port 8000
 ```
 
 The endpoint accepts `delay=0..10` seconds. It uses a two-slot bulkhead, returns
