@@ -63,21 +63,32 @@ The generated OpenAPI contract is available at `/openapi.json`:
 
 ## Testing
 
+### Unit Testing
+
+```bash
+.venv/bin/python -m pytest tests/unit -q
+```
+
+Unit tests cover isolated application logic.
+
+### Integration Testing
+
+```bash
+.venv/bin/python -m pytest tests/integration -q
+```
+
+Integration tests exercise FastAPI, request validation, database persistence, and
+endpoint behavior together.
+
 Run the full test suite:
 
 ```bash
 .venv/bin/python -m pytest tests -q
 ```
 
-Run only unit or integration tests:
+### Load Testing
 
-```bash
-.venv/bin/python -m pytest tests/unit -q
-.venv/bin/python -m pytest tests/integration -q
-```
-
-Unit tests cover isolated application logic. Integration tests exercise FastAPI,
-request validation, database persistence, and endpoint behavior together.
+Load-test commands and results: [assets/load-test-results.md](assets/load-test-results.md).
 
 ## Project structure
 
@@ -316,6 +327,6 @@ Proof of concept, built incrementally over 5 days.
 - **Day 1**: Planning, framework selection, GET /health ✅
 - **Day 2**: Data layer, POST /readings ingest ✅
 - **Day 3**: Debugging session, GET /readings query endpoint, latest mode, lookback aggregation, and verification complete
-- **Day 4**: Baseline load testing, IP-based token-bucket rate limiting, timeout, bulkhead exercises, and automated tests complete: 17 tests passing
+- **Day 4**: Local load-test baseline, IP-based token-bucket rate limiting, timeout, bulkhead exercises, and automated tests complete
 - **Initial PoC**: Complete for the original challenge requirements ✅
 - **Day 5 / optional**: Conversational AI assistant, PostgreSQL migration, and production observability remain future work
