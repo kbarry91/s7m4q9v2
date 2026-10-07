@@ -7,6 +7,8 @@ from app.services.fake_slow_dependency_service import FakeSlowDependencyService
 
 
 router = APIRouter(prefix="/test", tags=["testing"])
+# This endpoint is disabled by default and exists only to exercise resilience behavior.
+# Enable it with TEST_DEPENDENCY_ENABLED=true when starting the application.
 test_dependency_bulkhead = asyncio.Semaphore(2)
 test_dependency_admission = asyncio.Lock()
 
@@ -32,6 +34,7 @@ async def slow_dependency(
     test_service = FakeSlowDependencyService()
 
     try:
+        # Stop waiting for a slow dependency after the configured timeout.
         return await asyncio.wait_for(
             test_service.call(delay),
             timeout=get_test_dependency_timeout_seconds(),
@@ -42,4 +45,5 @@ async def slow_dependency(
             detail="Test dependency timed out",
         )
     finally:
+        # Always return the slot, including when the call times out.
         test_dependency_bulkhead.release()
