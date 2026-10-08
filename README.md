@@ -35,6 +35,18 @@ For development and testing, install the additional tools with:
 pip install -r requirements-dev.txt
 ```
 
+## Docker
+
+Docker Desktop lets the API run the same way on macOS or Windows:
+
+```bash
+docker build -t weather-sensor-api .
+docker run --rm -p 8000:8000 -v weather-api-data:/app/data weather-sensor-api
+```
+
+The named volume keeps the SQLite database when the container stops. The API is
+available at `http://127.0.0.1:8000`.
+
 ## Running the API
 
 | Command | macOS |

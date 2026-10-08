@@ -60,6 +60,16 @@ def test_readings_rejects_invalid_days_values():
     assert thirty_one_days_response.status_code == 422
 
 
+def test_readings_rejects_latest_as_an_aggregation_statistic():
+    with TestClient(app) as client:
+        response = client.get(
+            "/readings",
+            params={"statistic": "latest", "days": 8},
+        )
+
+    assert response.status_code == 422
+
+
 def test_readings_supports_min_max_and_sum_statistics():
     sensor_id = f"integration-query-statistics-{uuid4().hex}"
     limiter.buckets.clear()

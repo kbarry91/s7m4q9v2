@@ -1,5 +1,6 @@
 """Database engine, session factory, and ORM base."""
 
+import os
 from collections.abc import AsyncGenerator
 
 from sqlalchemy.ext.asyncio import (
@@ -9,7 +10,7 @@ from sqlalchemy.ext.asyncio import (
 )
 from sqlalchemy.orm import DeclarativeBase
 
-DATABASE_URL = "sqlite+aiosqlite:///./weather.db"
+DATABASE_URL = os.getenv("DATABASE_URL", "sqlite+aiosqlite:///./weather.db")
 
 engine = create_async_engine(DATABASE_URL)
 SessionLocal = async_sessionmaker(engine, expire_on_commit=False)

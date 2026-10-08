@@ -1,0 +1,13 @@
+.git
+.venv
+__pycache__
+.pytest_cache
+*.db
+*.sqlite3
+.env
+learning
+docs
+tests
+assets
+scripts
+README.md

@@ -9,6 +9,7 @@ from app.persistence.db import get_session
 from app.persistence.models import Reading
 from app.persistence.repository import ReadingRepository
 from app.schemas import (
+    AggregationStatistic,
     Metric,
     ReadingAggregateResponse,
     ReadingCreateRequest,
@@ -52,7 +53,7 @@ async def create_reading(
 async def query_readings(
     sensor_ids: list[str] | None = Query(default=None),
     metrics: list[Metric] | None = Query(default=None),
-    statistic: Statistic | None = Query(default=None),
+    statistic: AggregationStatistic | None = Query(default=None),
     days: int | None = Query(default=None, ge=1, le=30),
     session: AsyncSession = Depends(get_session),
 ) -> list[dict]:
