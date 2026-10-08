@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta, timezone
 
 from app.persistence.repository import ReadingRepository
-from app.schemas import Statistic
+from app.schemas import AggregationStatistic, Statistic
 
 
 class QueryReadingService:
@@ -13,7 +13,7 @@ class QueryReadingService:
         self,
         sensor_ids: list[str] | None,
         metrics: list[str] | None,
-        statistic: Statistic,
+        statistic: AggregationStatistic | None,
         days: int | None,
     ) -> list[dict]:
         if days is None:
@@ -23,7 +23,7 @@ class QueryReadingService:
                 metrics=metrics,
             )
         else:
-            aggregation_statistic = statistic or Statistic.avg
+            aggregation_statistic = Statistic((statistic or AggregationStatistic.avg).value)
 
             end_timestamp = datetime.now(timezone.utc)
             start_timestamp = end_timestamp - timedelta(days=days)
