@@ -356,4 +356,4 @@ Proof of concept, built incrementally over 5 days.
 - **Day 3**: Debugging session, GET /readings query endpoint, latest mode, lookback aggregation, and verification  ✅
 - **Day 4**: Local load-test baseline, IP-based token-bucket rate limiting, timeout, bulkhead exercises, and automated tests  ✅
 - **Initial PoC**: Complete for the original challenge requirements ✅
-- **Future Enhancements**: Conversational AI assistant, PostgreSQL migration, and production observability remain future work
+- **Future Enhancements**: Conversational AI assistant, PostgreSQL migration, and production observability remain future work ⏳
