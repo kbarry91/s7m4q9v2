@@ -1,6 +1,6 @@
 # Weather Sensor REST API
 
-[![CI](https://github.com/kbarry91/weather-rest-api/actions/workflows/ci.yml/badge.svg)](https://github.com/kbarry91/weather-rest-api/actions/workflows/ci.yml)
+[![CI](https://github.com/kbarry91/s7m4q9v2/actions/workflows/ci.yml/badge.svg)](https://github.com/kbarry91/s7m4q9v2/actions/workflows/ci.yml)
 
 A REST API that ingests weather metrics from sensors (temperature, humidity, wind
 speed, ...) and lets you query the latest readings or aggregate a lookback period.
