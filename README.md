@@ -8,11 +8,55 @@ Built with **FastAPI** (async) and **SQLite** (swappable to PostgreSQL).
 ## Requirements
 
 - Python 3.11 or newer (developed on 3.14)
+- Docker desktop to run create docker image and run docker container
 
 Development and testing were performed on macOS 26.7.1 with Python 3.14.5.
 
-## Setup
+## Project structure
 
+```
+app/
+  main.py            # app entry point and router registration
+  rate_limiter.py    # in-memory token-bucket rate limiting
+  routers/           # HTTP layer and endpoint definitions
+    health.py
+    readings.py
+    resilience_demo_router.py
+  services/          # business logic and fake test dependency
+    query_service.py
+    fake_slow_dependency_service.py
+  config.py          # environment-based configuration
+  persistence/       # database engine, ORM models, and repositories
+    db.py
+    models.py
+    repository.py
+  schemas.py         # Pydantic request and response models
+tests/
+  unit/              # isolated logic tests
+    test_config.py
+    test_query_service.py
+    test_rate_limiter.py
+  integration/       # FastAPI, validation, and SQLite tests
+    test_health_endpoint.py
+    test_readings_ingestion.py
+    test_readings_queries.py
+    test_resilience_endpoints.py
+assets/               # API documentation and load-test evidence
+  openapi-json.png
+  swagger-ui.png
+  load-test-reading.json
+  load-test-results.md
+Dockerfile             # container image definition
+.dockerignore          # files excluded from the image build context
+.github/workflows/ci.yml # automated test workflow
+requirements.txt     # runtime dependencies
+requirements-dev.txt # development and test dependencies
+pytest.ini           # pytest discovery configuration
+```
+
+
+## Setup
+### MAC OS
 Clone the repo, then from the project root:
 
 ```bash
@@ -35,7 +79,7 @@ For development and testing, install the additional tools with:
 pip install -r requirements-dev.txt
 ```
 
-## Docker
+### Docker
 
 Docker Desktop lets the API run the same way on macOS or Windows:
 
@@ -67,11 +111,11 @@ The `--reload` flag restarts the server automatically when you edit code (dev on
 
 Swagger UI provides interactive documentation at `/docs`:
 
-![Swagger UI for the Weather Sensor API](assets/swagger-ui.png)
+<img src="assets/swagger-ui.png" alt="Swagger UI for the Weather Sensor API" width="600">
 
 The generated OpenAPI contract is available at `/openapi.json`:
 
-![Generated OpenAPI JSON for the Weather Sensor API](assets/openapi-json.png)
+<img src="assets/openapi-json.png" alt="Generated OpenAPI JSON for the Weather Sensor API" width="600">
 
 ## Testing
 
@@ -102,38 +146,7 @@ Run the full test suite:
 
 Load-test commands and results: [assets/load-test-results.md](assets/load-test-results.md).
 
-## Project structure
 
-```
-app/
-  main.py            # app entry point and router registration
-  routers/           # HTTP layer and endpoint definitions
-    health.py
-    readings.py
-    resilience_demo_router.py
-  services/          # business logic and fake test dependency
-    query_service.py
-    fake_slow_dependency_service.py
-  config.py          # environment-based configuration
-  persistence/       # database engine, ORM models, and repositories
-    db.py
-    models.py
-    repository.py
-  schemas.py         # Pydantic request and response models
-tests/
-  unit/              # isolated logic tests
-    test_config.py
-    test_query_service.py
-    test_rate_limiter.py
-  integration/       # FastAPI, validation, and SQLite tests
-    test_health_endpoint.py
-    test_readings_ingestion.py
-    test_readings_queries.py
-    test_resilience_endpoints.py
-requirements.txt     # runtime dependencies
-requirements-dev.txt # development and test dependencies
-pytest.ini           # pytest discovery configuration
-```
 
 ## Endpoints
 
@@ -341,4 +354,4 @@ Proof of concept, built incrementally over 5 days.
 - **Day 3**: Debugging session, GET /readings query endpoint, latest mode, lookback aggregation, and verification complete
 - **Day 4**: Local load-test baseline, IP-based token-bucket rate limiting, timeout, bulkhead exercises, and automated tests complete
 - **Initial PoC**: Complete for the original challenge requirements ✅
-- **Day 5 / optional**: Conversational AI assistant, PostgreSQL migration, and production observability remain future work
+- **Future Enhancements**: Conversational AI assistant, PostgreSQL migration, and production observability remain future work
