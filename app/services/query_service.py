@@ -1,11 +1,10 @@
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 
 from app.persistence.repository import ReadingRepository
 from app.schemas import AggregationStatistic, Statistic
 
 
 class QueryReadingService:
-
     def __init__(self, repository: ReadingRepository) -> None:
         self.repository = repository
 
@@ -25,7 +24,7 @@ class QueryReadingService:
         else:
             aggregation_statistic = Statistic((statistic or AggregationStatistic.avg).value)
 
-            end_timestamp = datetime.now(timezone.utc)
+            end_timestamp = datetime.now(UTC)
             start_timestamp = end_timestamp - timedelta(days=days)
             response_rows = await self.repository.get_aggregate(
                 sensor_ids=sensor_ids,

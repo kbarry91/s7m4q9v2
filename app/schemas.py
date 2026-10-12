@@ -11,13 +11,15 @@ class Metric(str, Enum):
     humidity = "humidity"
     wind_speed = "wind_speed"
 
+
 # Response statistic
-class Statistic (str, Enum):
+class Statistic(str, Enum):
     min = "min"
     max = "max"
     avg = "avg"
     sum = "sum"
     latest = "latest"
+
 
 # Request statistic
 class AggregationStatistic(str, Enum):
@@ -25,6 +27,7 @@ class AggregationStatistic(str, Enum):
     max = "max"
     avg = "avg"
     sum = "sum"
+
 
 class ReadingCreateRequest(BaseModel):
     """Incoming payload for a single sensor reading."""

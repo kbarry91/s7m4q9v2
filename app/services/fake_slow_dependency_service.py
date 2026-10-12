@@ -8,4 +8,3 @@ class FakeSlowDependencyService:
         # The delay lets us reproduce slow-provider behavior without changing the database path.
         await asyncio.sleep(delay)
         return {"status": "success", "delay": delay}
-

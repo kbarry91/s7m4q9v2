@@ -5,12 +5,12 @@ from fastapi import APIRouter, HTTPException, Query
 from app.config import get_test_dependency_timeout_seconds, is_test_dependency_enabled
 from app.services.fake_slow_dependency_service import FakeSlowDependencyService
 
-
 router = APIRouter(prefix="/test", tags=["testing"])
 # This endpoint is disabled by default and exists only to exercise resilience behavior.
 # Enable it with TEST_DEPENDENCY_ENABLED=true when starting the application.
 test_dependency_bulkhead = asyncio.Semaphore(2)
 test_dependency_admission = asyncio.Lock()
+
 
 # Admission is serialized only long enough to check capacity and claim a slot.
 # The semaphore then limits slow dependency calls to two concurrent operations.
@@ -39,11 +39,11 @@ async def slow_dependency(
             test_service.call(delay),
             timeout=get_test_dependency_timeout_seconds(),
         )
-    except asyncio.TimeoutError:
+    except TimeoutError:
         raise HTTPException(
             status_code=504,
             detail="Test dependency timed out",
-        )
+        ) from None
     finally:
         # Always return the slot, including when the call times out.
         test_dependency_bulkhead.release()

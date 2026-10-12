@@ -1,5 +1,7 @@
-from app.rate_limiter import TokenBucketRateLimiter 
 import time
+
+from app.rate_limiter import TokenBucketRateLimiter
+
 
 def test_new_client_can_burst_to_capacity():
     rate_limiter = TokenBucketRateLimiter(capacity=5, refill_rate=1)
@@ -15,6 +17,7 @@ def test_new_client_can_burst_to_capacity():
     # After some time, the bucket should refill and allow requests again
     time.sleep(1)  # Wait for the bucket to refill
     assert rate_limiter.allow_request(client_id) is True
+
 
 def test_each_client_has_an_independent_bucket():
     rate_limiter = TokenBucketRateLimiter(capacity=5, refill_rate=1)
