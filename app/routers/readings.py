@@ -1,6 +1,6 @@
 """Sensor reading ingestion endpoints."""
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from fastapi import APIRouter, Depends, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -8,16 +8,15 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.persistence.db import get_session
 from app.persistence.models import Reading
 from app.persistence.repository import ReadingRepository
+from app.rate_limiter import enforce_rate_limit
 from app.schemas import (
     AggregationStatistic,
     Metric,
     ReadingAggregateResponse,
     ReadingCreateRequest,
     ReadingCreateResponse,
-    Statistic,
 )
 from app.services.query_service import QueryReadingService
-from app.rate_limiter import enforce_rate_limit
 
 router = APIRouter(tags=["readings"])
 
@@ -32,12 +31,12 @@ async def create_reading(
     payload: ReadingCreateRequest,
     session: AsyncSession = Depends(get_session),
 ) -> Reading:
-   
+
     reading = Reading(
         sensor_id=payload.sensor_id,
         metric=payload.metric,
         value=payload.value,
-        timestamp=payload.timestamp or datetime.now(timezone.utc),
+        timestamp=payload.timestamp or datetime.now(UTC),
     )
 
     # The database assigns the ID during persistence.

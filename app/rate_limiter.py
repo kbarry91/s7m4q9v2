@@ -4,7 +4,6 @@ from fastapi import HTTPException, Request
 
 
 class TokenBucketRateLimiter:
-
     def __init__(
         self,
         capacity: int = 5,
@@ -44,7 +43,9 @@ class TokenBucketRateLimiter:
 
         return False
 
+
 limiter = TokenBucketRateLimiter()
+
 
 async def enforce_rate_limit(request: Request) -> None:
     client_key = request.client.host if request.client else "unknown-ip"

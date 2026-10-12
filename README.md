@@ -51,35 +51,28 @@ assets/               # API documentation and load-test evidence
 Dockerfile             # container image definition
 .dockerignore          # files excluded from the image build context
 .github/workflows/ci.yml # automated test workflow
-requirements.txt     # runtime dependencies
-requirements-dev.txt # development and test dependencies
+pyproject.toml       # project metadata, dependencies, and ruff config
+uv.lock              # locked dependency versions (managed by uv)
 pytest.ini           # pytest discovery configuration
 ```
 
 
 ## Setup
 ### MAC OS
-Clone the repo, then from the project root:
+
+This project uses [uv](https://docs.astral.sh/uv/) for dependency management. Install
+it once, then clone the repo and sync from the project root:
 
 ```bash
-# 1. Create an isolated virtual environment
-python3 -m venv .venv
+# 1. Install uv (one-time, if not already installed)
+curl -LsSf https://astral.sh/uv/install.sh | sh
 
-# 2. Activate it
-source .venv/bin/activate
-
-# 3. Install dependencies (pinned in requirements.txt for reproducibility)
-pip install -r requirements.txt
+# 2. Install runtime and dev dependencies into a managed .venv
+uv sync --group dev
 ```
 
-To reproduce this environment on macOS, repeat the three steps above. The pinned
-`requirements.txt` guarantees the same package versions.
-
-For development and testing, install the additional tools with:
-
-```bash
-pip install -r requirements-dev.txt
-```
+`uv.lock` pins exact versions, so `uv sync` reproduces the same environment every
+time. There is no separate manual `venv`/`pip install` step.
 
 ### Docker
 
@@ -97,11 +90,12 @@ available at `http://127.0.0.1:8000`.
 
 | Command | macOS |
 |---|---|
-| Start API | `uvicorn app.main:app --reload` |
-| Run all tests | `.venv/bin/python -m pytest tests -q` |
+| Start API | `uv run uvicorn app.main:app --reload` |
+| Run all tests | `uv run python -m pytest tests -q` |
 
-Run these commands after activating the virtual environment. The SQLite database is
-created as `weather.db` in the project root on first startup.
+`uv run` executes the command inside the project's managed environment, so there is
+no need to activate a virtual environment first. The SQLite database is created as
+`weather.db` in the project root on first startup.
 
 - API base URL: http://127.0.0.1:8000
 - Interactive docs (Swagger UI): http://127.0.0.1:8000/docs
@@ -124,7 +118,7 @@ The generated OpenAPI contract is available at `/openapi.json`:
 ### Unit Testing
 
 ```bash
-.venv/bin/python -m pytest tests/unit -q
+uv run python -m pytest tests/unit -q
 ```
 
 Unit tests cover isolated application logic.
@@ -132,7 +126,7 @@ Unit tests cover isolated application logic.
 ### Integration Testing
 
 ```bash
-.venv/bin/python -m pytest tests/integration -q
+uv run python -m pytest tests/integration -q
 ```
 
 Integration tests exercise FastAPI, request validation, database persistence, and
@@ -141,7 +135,14 @@ endpoint behavior together.
 Run the full test suite:
 
 ```bash
-.venv/bin/python -m pytest tests -q
+uv run python -m pytest tests -q
+```
+
+### Linting
+
+```bash
+uv run ruff check .
+uv run ruff format .
 ```
 
 ### Load Testing
