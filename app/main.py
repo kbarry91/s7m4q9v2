@@ -5,7 +5,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 
 from app.persistence.db import init_db
-from app.routers import health, readings, resilience_demo_router
+from app.routers import assistant, health, readings, resilience_demo_router
 
 
 @asynccontextmanager
@@ -24,3 +24,4 @@ app = FastAPI(
 app.include_router(health.router)
 app.include_router(readings.router)
 app.include_router(resilience_demo_router.router)
+app.include_router(assistant.router)
