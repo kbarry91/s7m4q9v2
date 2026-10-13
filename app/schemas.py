@@ -65,3 +65,15 @@ class ReadingAggregateResponse(BaseModel):
     metric: Metric = Field(description="Which metric this reading is for")
     statistic: Statistic = Field(description="Which statistic was computed")
     value: float = Field(description="Computed value of the requested statistic")
+
+
+class AssistantRequest(BaseModel):
+    """Incoming message for the conversational assistant."""
+
+    message: str = Field(min_length=1, max_length=1000)
+
+
+class AssistantResponse(BaseModel):
+    """Assistant response generated from an allowlisted tool result."""
+
+    answer: str

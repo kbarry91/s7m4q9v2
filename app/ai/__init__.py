@@ -1,0 +1,1 @@
+"""Bedrock conversational assistant components."""
